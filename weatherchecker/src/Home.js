@@ -1,80 +1,58 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import axios from "axios";
+import Grid from "@mui/material/Grid";
+import Typography from "@mui/material/Typography";
+import useMediaQuery from '@mui/material/useMediaQuery'; // Importujemy hook useMediaQuery
 
-import Button from "@mui/material/Button";
-import TextField from "@mui/material/TextField";
-import ForecastComponent from "./components/forecastComponent"; // Import nowego komponentu prognozy pogody
+import logo from "./assets/logo.png";
+import LocationForm from "./components/locationForm";
+import WeatherForecast from "./components/weatherForecast";
+import LocationService from "./components/locationService";
 
 const Home = () => {
   const [city, setCity] = useState("");
-  const [forecast, setForecast] = useState(null); // Zmieniono state na prognozę pogody
+  const [forecast, setForecast] = useState(null);
 
-  useEffect(() => {
-    const fetchLocationAndWeather = async () => {
-      if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(
-          async (position) => {
-            const { latitude, longitude } = position.coords;
-            try {
-              const response = await axios.get(
-                `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${latitude}&longitude=${longitude}&localityLanguage=en`
-              );
-              const cityName = response.data.city;
-              if (cityName) {
-                setCity(cityName);
-                fetchWeather(cityName);
-              }
-            } catch (error) {
-              console.error("Błąd przy uzyskiwaniu lokalizacji: ", error);
-            }
-          },
-          () => {
-            console.error("Nie udało się uzyskać lokalizacji");
-          }
-        );
-      } else {
-        console.error(
-          "Geolokalizacja nie jest wspierana przez tę przeglądarkę."
-        );
-      }
-    };
-
-    fetchLocationAndWeather();
-  }, []);
+  const isSmallScreen = useMediaQuery('(max-width:1000px)'); // Używamy useMediaQuery do sprawdzenia szerokości ekranu
 
   const fetchWeather = async (cityName) => {
     const apiKey = "1000b00bb102f66f8cb2fd52d4c6a4df";
-    const url = `http://api.openweathermap.org/data/2.5/forecast?q=${cityName}&appid=${apiKey}&units=metric&lang=pl`; // Zmodyfikowano URL zapytania
+    const url = `http://api.openweathermap.org/data/2.5/forecast?q=${cityName}&appid=${apiKey}&units=metric&lang=pl`;
 
     try {
       const response = await axios.get(url);
-      setForecast(response.data); // Zmieniono ustawianie danych na prognozę pogody
+      setForecast(response.data);
     } catch (error) {
       console.error("Błąd przy uzyskiwaniu danych pogodowych: ", error);
     }
   };
 
-  const handleFormSubmit = (e) => {
-    e.preventDefault();
-    fetchWeather(city);
+  const handleLocationChange = (cityName) => {
+    setCity(cityName);
+    fetchWeather(cityName);
   };
 
   return (
     <div className="p-4">
-      <form onSubmit={handleFormSubmit} className="flex flex-col gap-4">
-        <TextField
-          label="Wpisz miasto"
-          variant="outlined"
-          value={city}
-          onChange={(e) => setCity(e.target.value)}
-          className="w-full"
-        />
-        <Button type="submit" variant="contained" color="primary">
-          Pobierz pogodę
-        </Button>
-      </form>
-      {forecast && <ForecastComponent data={forecast} />} {/* Wyświetl prognozę pogody */}
+      <Grid container spacing={0} justifyContent="center" alignItems="center" direction={isSmallScreen ? 'column' : 'row'}>
+        <Grid item xs={12} textAlign="center">
+          <img src={logo} alt="Logo" style={{ width: 250, height: 250 }} /> 
+        </Grid>
+        <Grid item xs={12} textAlign="center">
+          <LocationForm onSubmit={handleLocationChange} />
+        </Grid>
+      </Grid>
+      {city && (
+        <Typography variant="h4" gutterBottom textAlign="flex-start" sx={{
+          marginLeft: "3rem"
+        }}>
+          Prognoza pogody dla {city}
+        </Typography>
+      )}
+      <WeatherForecast forecast={forecast} />
+      <LocationService onLocationChange={handleLocationChange} />
     </div>
   );
 };
+
 export default Home;

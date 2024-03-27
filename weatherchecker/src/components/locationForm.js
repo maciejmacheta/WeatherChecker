@@ -1,14 +1,23 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
-import Typography from "@mui/material/Typography"; // Dodano import komponentu Typography
+import Typography from "@mui/material/Typography";
+import SearchIcon from '@mui/icons-material/Search';
 
-const LocationForm = ({ onSubmit }) => {
-  const [city, setCity] = useState("");
+const LocationForm = ({ onSubmit, initialCity }) => {
+  const [city, setCity] = useState(initialCity);
+
+  useEffect(() => {
+    setCity(initialCity);
+  }, [initialCity]);
 
   const handleFormSubmit = (e) => {
     e.preventDefault();
     onSubmit(city);
+  };
+
+  const handleCityChange = (e) => {
+    setCity(e.target.value);
   };
 
   return (
@@ -19,24 +28,23 @@ const LocationForm = ({ onSubmit }) => {
       <form onSubmit={handleFormSubmit} className="flex flex-col gap-4">
         <TextField
           label="Wpisz miasto"
-          variant="filled"
+          variant="outlined"
           value={city}
-          onChange={(e) => setCity(e.target.value)}
-          sx={{ width: "250px", marginRight: "1%", 
-          backgroundColor: '#F5F5DC', }}
+          onChange={handleCityChange}
+          sx={{ width: "250px", marginRight: "2px", backgroundColor: '#fff' }}
         />
         <Button
           sx={{
             height: "56px",
             whiteSpace: "nowrap",
-            backgroundColor: '#F5F5DC',
-            color: '#000',
+            backgroundColor: '#1b4779',
+            color: '#fff',
             marginBottom: "4rem"
           }}
           type="submit"
           variant="contained"
         >
-          Sprawdź pogodę
+        <SearchIcon/>
         </Button>
       </form>
     </div>

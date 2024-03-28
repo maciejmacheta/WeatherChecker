@@ -11,8 +11,9 @@ import {
   useMediaQuery,
 } from "@mui/material";
 import WeatherIcon from "./weatherIcon";
+import AirPollution from "./airPollution";
 
-const CurrentWeather = ({ city }) => {
+const CurrentWeather = ({ city, data }) => {
   const [currentWeather, setCurrentWeather] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const matches = useMediaQuery("(max-width:600px)"); // Sprawdza, czy szerokość ekranu jest mniejsza niż 600px
@@ -73,11 +74,11 @@ const CurrentWeather = ({ city }) => {
       >
         {city}, {currentDate}
       </Typography>
-      <Paper elevation={5} style={{ backgroundColor: "#234f83" }}>
+      <Paper elevation={5} style={{display: 'flex', flexDirection: 'row', backgroundColor: "#234f83", padding: '20px' }}>
         <Box
           style={{
-            margin: "20px",
             padding: "20px",
+            width: '65%',
             alignContent: "center",
             backgroundColor: "#234f83",
             border: "1px solid #355e8e",
@@ -121,7 +122,7 @@ const CurrentWeather = ({ city }) => {
               </thead>
               <tbody>
                 <tr style={{ marginBottom: "5px" }}>
-                  <td style={{ paddingRight: matches ? "20px" : "100px" }}>
+                  <td style={{ paddingRight: matches ? "20px" : "50px" }}>
                     <Typography
                       sx={{ fontSize: "15px" }}
                       variant="h5"
@@ -132,7 +133,7 @@ const CurrentWeather = ({ city }) => {
                       {Math.round(currentWeather.main.feels_like)}°C
                     </Typography>
                   </td>
-                  <td style={{ paddingRight: matches ? "20px" : "100px" }}>
+                  <td style={{ paddingRight: matches ? "20px" : "50px" }}>
                     <Typography
                       sx={{ fontSize: "15px" }}
                       variant="h5"
@@ -160,6 +161,8 @@ const CurrentWeather = ({ city }) => {
             </table>
           </Grid>
         </Box>
+
+        {data && <AirPollution data={data} />} 
       </Paper>
     </Box>
   );

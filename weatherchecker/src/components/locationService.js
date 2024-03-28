@@ -4,6 +4,10 @@ import axios from "axios";
 const LocationService = ({ onLocationChange }) => {
   const [cityName, setCityName] = useState("");
 
+  const [latitude, setLatitude] = useState("");
+
+  const [longitude, setLongitude] = useState("");
+
   useEffect(() => {
     const fetchLocation = async () => {
       if (navigator.geolocation) {
@@ -16,11 +20,12 @@ const LocationService = ({ onLocationChange }) => {
               );
               const city = response.data.city;
               if (city) {
-                // Opóźnienie przed ustawieniem nazwy miasta
                 setTimeout(() => {
                   setCityName(city);
-                  onLocationChange(city);
-                }, 1000); // Opóźnienie ustawione na 1 sekundę (1000 ms)
+                  setLatitude(latitude);
+                  setLongitude(longitude);
+                  onLocationChange(city, latitude, longitude);
+                }, 1000);
               }
             } catch (error) {
               console.error("Błąd przy uzyskiwaniu lokalizacji: ", error);

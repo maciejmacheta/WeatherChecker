@@ -1,11 +1,19 @@
 import React, { useEffect, useState } from "react";
-import TextField from "@mui/material/TextField";
-import Button from "@mui/material/Button";
-import Typography from "@mui/material/Typography";
-import SearchIcon from '@mui/icons-material/Search';
+import SearchIcon from "@mui/icons-material/Search";
+import {
+  useMediaQuery,
+  Grid,
+  Typography,
+  Button,
+  TextField,
+  Box,
+} from "@mui/material";
+import logo from "../assets/logo.png";
 
 const LocationForm = ({ onSubmit, initialCity }) => {
   const [city, setCity] = useState(initialCity);
+  const matches = useMediaQuery("(max-width:600px)");
+  const matchesMedium = useMediaQuery("(max-width:1200px)");
 
   useEffect(() => {
     setCity(initialCity);
@@ -16,38 +24,76 @@ const LocationForm = ({ onSubmit, initialCity }) => {
     onSubmit(city);
   };
 
-  const handleCityChange = (e) => {
-    setCity(e.target.value);
-  };
-
   return (
-    <div>
-      <Typography variant="h6" gutterBottom textAlign="center" sx={{ marginBottom: "2rem" }}>
-        Bądź przygotowany, sprawdź najbliższą pogodę!
-      </Typography>
-      <form onSubmit={handleFormSubmit} className="flex flex-col gap-4">
-        <TextField
-          label="Wpisz miasto"
-          variant="outlined"
-          value={city}
-          onChange={handleCityChange}
-          sx={{ width: "250px", marginRight: "2px", backgroundColor: '#fff' }}
-        />
-        <Button
-          sx={{
-            height: "56px",
-            whiteSpace: "nowrap",
-            backgroundColor: '#1b4779',
-            color: '#fff',
-            marginBottom: "4rem"
+    <Grid
+      container
+      sx={{
+        width: "100%",
+        justifyContent: "space-between",
+        alignItems: "center",
+        flexDirection: matchesMedium ? "column" : "row",
+        backgroundColor: "#fff",
+        marginBottom: "5%",
+      }}
+    >
+      <Grid
+        item
+        xs={matches || matchesMedium ? 12 : 2}
+        sx={{ marginLeft: matches ? 0 : "2%" }}
+      >
+        <img
+          src={logo}
+          alt="Logo"
+          style={{
+            width: 130,
+            height: 130,
+            marginLeft: matches || matchesMedium ? 0 : "2%",
           }}
-          type="submit"
-          variant="contained"
+        />
+      </Grid>
+      <Grid item xs={matches || matchesMedium ? 12 : 6}>
+        <Typography
+          color="#1b4779"
+          variant="overline"
+          fontSize={matches ? "12px" : "20px"}
+          textAlign="center"
         >
-        <SearchIcon/>
-        </Button>
-      </form>
-    </div>
+          Bądź przygotowany, sprawdź najbliższą pogodę!
+        </Typography>
+      </Grid>
+      <Grid item xs={matches || matchesMedium ? 12 : 3}>
+        <Box
+          component="form"
+          onSubmit={handleFormSubmit}
+          sx={{ display: "flex", flexDirection: "row" }}
+        >
+          <TextField
+            label="Wpisz miasto"
+            variant="outlined"
+            value={city}
+            onChange={(e) => setCity(e.target.value)}
+            sx={{
+              width: matches ? "75vw" : "300px",
+              marginRight: "2%",
+              backgroundColor: "#fff",
+              marginBottom: matchesMedium ? "10px" : 0,
+            }}
+          />
+          <Button
+            sx={{
+              height: "56px",
+              whiteSpace: "nowrap",
+              backgroundColor: "#1b4779",
+              color: "#fff",
+            }}
+            type="submit"
+            variant="contained"
+          >
+            <SearchIcon />
+          </Button>
+        </Box>
+      </Grid>
+    </Grid>
   );
 };
 

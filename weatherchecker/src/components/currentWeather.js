@@ -5,9 +5,6 @@ import {
   Typography,
   Paper,
   Grid,
-  Container,
-  Stack,
-  Item,
   useMediaQuery,
 } from "@mui/material";
 import WeatherIcon from "./weatherIcon";
@@ -16,11 +13,13 @@ import AirPollution from "./airPollution";
 const CurrentWeather = ({ city, data }) => {
   const [currentWeather, setCurrentWeather] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
-  const matches = useMediaQuery("(max-width:600px)"); // Sprawdza, czy szerokość ekranu jest mniejsza niż 600px
+  const matches = useMediaQuery("(max-width:600px)");
+  const matchesMSmall = useMediaQuery("(max-width:920px)");
+  const matchesMedium = useMediaQuery("(max-width:1200px)");
 
   useEffect(() => {
     const fetchCurrentWeather = async () => {
-      const apiKey = "1000b00bb102f66f8cb2fd52d4c6a4df"; // Ustaw swój klucz API
+      const apiKey = "1000b00bb102f66f8cb2fd52d4c6a4df";
       const url = `http://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=metric&lang=pl`;
 
       try {
@@ -37,11 +36,7 @@ const CurrentWeather = ({ city, data }) => {
   }, [city]);
 
   if (!currentWeather) {
-    return (
-      <Typography variant="h4" gutterBottom textAlign="center">
-        Brak danych pogodowych dla {city}.
-      </Typography>
-    );
+    return [null];
   }
 
   const currentDate = new Date().toLocaleDateString("pl-PL", {
@@ -67,18 +62,30 @@ const CurrentWeather = ({ city, data }) => {
       }}
     >
       <Typography
-        variant={matches ? "h5" : "h3"}
-        gutterBottom
+        variant="overline"
         color="white"
-        style={{ margin: "20px 20px 20px" }}
+        style={{
+          fontSize: matches ? "15px" : "30px",
+          margin: "10px 20px 10px",
+        }}
       >
         {city}, {currentDate}
       </Typography>
-      <Paper elevation={5} style={{display: 'flex', flexDirection: 'row', backgroundColor: "#234f83", padding: '20px' }}>
+      <Paper
+        elevation={5}
+        style={{
+          display: "flex",
+          flexDirection: matches || matchesMSmall || matchesMedium ? "column" : "row",
+          backgroundColor: "#234f83",
+          padding: "20px",
+        }}
+      >
         <Box
           style={{
             padding: "20px",
-            width: '65%',
+            marginBottom: matches || matchesMSmall ? "5px" : 0,
+            width:
+              matches || matchesMSmall || matchesMedium? "auto" : "65%",
             alignContent: "center",
             backgroundColor: "#234f83",
             border: "1px solid #355e8e",
@@ -86,83 +93,105 @@ const CurrentWeather = ({ city, data }) => {
           }}
         >
           <Grid container>
-            <WeatherIcon
-              description={currentWeather.weather[0].description}
-              size={matches ? 100 : 160}
-            />
-            <Typography
-              sx={{
-                alignContent: "center",
-                fontSize: matches ? "60px" : "100px",
-                marginLeft: "1%",
-              }}
-            >
-              {Math.round(currentWeather.main.temp)}°C
-            </Typography>
+            <Grid item>
+              <WeatherIcon
+                description={currentWeather.weather[0].description}
+                size={matches ? 100 : matchesMedium ? 120 : 160}
+              />
+            </Grid>
 
-            <table style={{ width: "auto", marginLeft: "5%", marginTop: "2%" }}>
-              <thead>
-                <tr>
-                  <th
-                    style={{
-                      textAlign: "left",
-                    }}
-                    colSpan="3"
+            <Grid item>
+              <Typography
+                sx={{
+                  alignContent: "center",
+                  fontSize: matches ? "60px" : matchesMedium ? "70px" : "100px",
+                  marginLeft: "1%",
+                  paddingRight: matches ? "20px" : "50px",
+                }}
+              >
+                {Math.round(currentWeather.main.temp)}°C
+              </Typography>
+            </Grid>
+            <Grid item xs container direction="column">
+              <Grid item justifyContent="center">
+                <Typography
+                  sx={{
+                    fontSize: matches ? "20px" : "25px",
+                    padding: "20px 0px 20px 0px",
+                  }}
+                >
+                  {capitalizeFirstLetter(currentWeather.weather[0].description)}
+                </Typography>
+              </Grid>
+              <Grid item xs container direction="row">
+                <Box
+                  sx={{
+                    display: "flex",
+                    flexDirection: "column",
+                    paddingRight: matches ? "20px" : "50px",
+                  }}
+                >
+                  <Typography
+                    variant="caption"
+                    sx={{ fontSize: "10px", color: "#A9B5C7" }}
                   >
-                    <Typography
-                      sx={{ fontSize: matches ? "20px" : "25px" }}
-                      variant="h5"
-                    >
-                      {capitalizeFirstLetter(
-                        currentWeather.weather[0].description
-                      )}
-                    </Typography>
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr style={{ marginBottom: "5px" }}>
-                  <td style={{ paddingRight: matches ? "20px" : "50px" }}>
-                    <Typography
-                      sx={{ fontSize: "15px" }}
-                      variant="h5"
-                      gutterBottom
-                    >
-                      Odczuwalna
-                      <br />
-                      {Math.round(currentWeather.main.feels_like)}°C
-                    </Typography>
-                  </td>
-                  <td style={{ paddingRight: matches ? "20px" : "50px" }}>
-                    <Typography
-                      sx={{ fontSize: "15px" }}
-                      variant="h5"
-                      gutterBottom
-                    >
-                      Wiatr
-                      <br />
-                      {currentWeather.wind.speed} m/s
-                    </Typography>
-                  </td>
+                    ODCZUWALNA
+                  </Typography>
+                  <Typography
+                    sx={{
+                      fontSize: "15px",
+                    }}
+                    variant="h5"
+                    gutterBottom
+                  >
+                    {Math.round(currentWeather.main.feels_like)}°C
+                  </Typography>
+                </Box>
+                <Box
+                  sx={{
+                    display: "flex",
+                    flexDirection: "column",
+                    paddingRight: matches ? "20px" : "50px",
+                  }}
+                >
+                  <Typography sx={{ color: "#A9B5C7" }} variant="caption">
+                    WIATR
+                  </Typography>
+                  <Typography
+                    sx={{
+                      fontSize: "15px",
+                    }}
+                    variant="h5"
+                    gutterBottom
+                  >
+                    {currentWeather.wind.speed} m/s
+                  </Typography>
+                </Box>
 
-                  <td>
-                    <Typography
-                      sx={{ fontSize: "15px" }}
-                      variant="h5"
-                      gutterBottom
-                    >
-                      Ciśnienie
-                      <br />
-                      {currentWeather.main.pressure} hPa
-                    </Typography>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
+                <Box
+                  sx={{
+                    display: "flex",
+                    flexDirection: "column",
+                  }}
+                >
+                <Typography sx={{ color: "#A9B5C7" }} variant="caption">
+                  CIŚNIENIE
+                </Typography>
+                <Typography sx={{ fontSize: "15px" }} variant="h5" gutterBottom>
+                  {currentWeather.main.pressure} hPa
+                </Typography>
+                </Box>
+              </Grid>
+            </Grid>
           </Grid>
         </Box>
 
-        {data && <AirPollution data={data} />} 
+        {data && (
+          <AirPollution
+            data={data}
+            style={{ marginTop: matches || matchesMedium ? "10px" : 0 }}
+          />
+        )}
       </Paper>
     </Box>
   );

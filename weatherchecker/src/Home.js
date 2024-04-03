@@ -1,18 +1,12 @@
-// Home.js
 
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import Grid from "@mui/material/Grid";
-import Typography from "@mui/material/Typography";
-import useMediaQuery from "@mui/material/useMediaQuery"; // Importujemy hook useMediaQuery
-import CircularProgress from "@mui/material/CircularProgress"; // Importujemy komponent ładowania
+import { Paper, Typography, useMediaQuery, CircularProgress } from "@mui/material";
 
-import logo from "./assets/logo.png";
 import LocationForm from "./components/locationForm";
 import WeatherForecast from "./components/weatherForecast";
 import LocationService from "./components/locationService";
 import CurrentWeather from "./components/currentWeather";
-import AirPollution from "./components/airPollution";
 import CityCoordinatesFetcher from "./components/cityCoordinatesFetcher";
 
 const Home = () => {
@@ -24,7 +18,7 @@ const Home = () => {
   const [lon, setLongitude] = useState(null);
   const [airQuality, setAirQuality] = useState(null);
 
-  const isSmallScreen = useMediaQuery("(max-width:1000px)"); // Używamy useMediaQuery do sprawdzenia szerokości ekranu
+  const matches = useMediaQuery("(max-width:600px)");
 
   const api = "1000b00bb102f66f8cb2fd52d4c6a4df";
 
@@ -50,13 +44,13 @@ const Home = () => {
   };
 
   const fetchAirQuality = async (lat, lon) => {
-    const apiKey = api; // Użyj swojego klucza API
+    const apiKey = api; 
     const url = `http://api.openweathermap.org/data/2.5/air_pollution?lat=${lat}&lon=${lon}&appid=${apiKey}`;
 
     try {
       const response = await axios.get(url);
       setAirQuality(response.data);
-      console.log(response.data)
+      console.log(response.data);
     } catch (error) {
       console.error(
         "Błąd przy uzyskiwaniu danych o zanieczyszczeniu powietrza: ",
@@ -69,24 +63,12 @@ const Home = () => {
     setCity(newCity);
     setIsLoading(true);
   };
-  
 
   return (
     <div className="p-4">
-      <Grid
-        container
-        spacing={0}
-        justifyContent="center"
-        alignItems="center"
-        direction={isSmallScreen ? "column" : "row"}
-      >
-        <Grid item xs={12} textAlign="center">
-          <img src={logo} alt="Logo" style={{ width: 250, height: 250 }} />
-        </Grid>
-        <Grid item xs={12} textAlign="center">
-          <LocationForm onSubmit={handleLocationChange} initialCity={city} />
-        </Grid>
-      </Grid>
+      <Paper elevation={5}>
+        <LocationForm onSubmit={handleLocationChange} initialCity={city} />
+        </Paper>
       {isLocationAllowed && isLoading ? (
         <div style={{ textAlign: "center" }}>
           <CircularProgress />
@@ -100,10 +82,11 @@ const Home = () => {
 
           {city && (
             <Typography
-              variant="h4"
+              variant="overline"
               gutterBottom
               textAlign="flex-start"
               sx={{
+                fontSize: matches ? "15px" : "30px",
                 marginLeft: "3%",
               }}
             >
@@ -115,15 +98,15 @@ const Home = () => {
       )}
       <LocationService onLocationChange={handleLocationChange} />
       <CityCoordinatesFetcher
-  cityName={city}
-  apiKey={api}
-  onCoordsReceived={({ lat, lon }) => {
-    setLatitude(lat);
-    setLongitude(lon);
-    fetchWeather(city);
-    fetchAirQuality(lat, lon);
-  }}
-/>
+        cityName={city}
+        apiKey={api}
+        onCoordsReceived={({ lat, lon }) => {
+          setLatitude(lat);
+          setLongitude(lon);
+          fetchWeather(city);
+          fetchAirQuality(lat, lon);
+        }}
+      />
     </div>
   );
 };

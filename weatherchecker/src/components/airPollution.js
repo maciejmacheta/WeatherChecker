@@ -1,7 +1,11 @@
 import React from "react";
-import { Typography, Box, Container } from "@mui/material";
+import { Typography, Box, Container, useMediaQuery } from "@mui/material";
 
 const AirPollution = ({ data }) => {
+  const matches = useMediaQuery("(max-width:600px)");
+  const matchesMSmall = useMediaQuery("(max-width:920px)");
+  const matchesMedium = useMediaQuery("(max-width:1200px)")
+
   const aqi = data.list[0].main.aqi;
 
   const getAQIDescription = (aqi) => {
@@ -16,9 +20,10 @@ const AirPollution = ({ data }) => {
   return (
     <Container
       style={{
+        marginTop: matches ? '10px' : 0,
         display: "flex",
         flexDirection: "row",
-        width: "30%",
+        width: matches || matchesMSmall || matchesMedium ? '85vw' : matchesMedium ? '50%' : '30%',
         color: "#fff",
         backgroundColor: "#05A83E",
         padding: 0
@@ -72,7 +77,7 @@ const AirPollution = ({ data }) => {
           <Typography variant="overline">{getAQIDescription(aqi)}</Typography>
         </Box>
         <Box sx={{ display: "flex", flexDirection: "row", mb: 4 }}>
-          <Box sx={{ display: "flex", flexDirection: "column", mr: 6, ml: 2 }}>
+          <Box sx={{ display: "flex", flexDirection: "column", mr: matches? 4 : 6, ml: 2 }}>
             <Typography sx={{ fontSize: "9px", color: "#8AD4A0" }} variant="body2">
               PM 2.5
             </Typography>
@@ -80,7 +85,7 @@ const AirPollution = ({ data }) => {
               {data.list[0].components.pm2_5}μg/m3
             </Typography>
           </Box>
-          <Box sx={{ display: "flex", flexDirection: "column" }}>
+          <Box sx={{ display: "flex", flexDirection: "column", mr: matches ? 2 : 0}}>
             <Typography sx={{ fontSize: "9px", color: "#8AD4A0" }} variant="body2">
               PM 10
             </Typography>

@@ -1,18 +1,14 @@
 import React, { useState, useRef, useEffect } from "react";
-import CircularProgress from "@mui/material/CircularProgress";
-import Card from "@mui/material/Card";
-import CardContent from "@mui/material/CardContent";
-import Typography from "@mui/material/Typography";
-import Box from "@mui/material/Box";
-import IconButton from "@mui/material/IconButton";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import ArrowBackIosNewIcon from "@mui/icons-material/ArrowBackIosNew";
 import WeatherIcon from "./weatherIcon";
+import { useMediaQuery, Card, CardContent, Typography, Box, IconButton, CircularProgress  } from "@mui/material";
 
 const ForecastComponent = ({ data, isLoading }) => {
   const [showLeftArrow, setShowLeftArrow] = useState(false);
   const [showRightArrow, setShowRightArrow] = useState(true);
   const scrollContainer = useRef(null);
+  const matches = useMediaQuery("(max-width:600px)"); 
 
   useEffect(() => {
     const checkScrollButtons = () => {
@@ -46,12 +42,14 @@ const ForecastComponent = ({ data, isLoading }) => {
             alignItems: "center",
             width: "100%",
             height: "100px",
+            padding: matches ? '20px' : 0
           }}
         >
           <CircularProgress />
         </Box>
       ) : (
         <Box sx={{ display: "flex", alignItems: "center" }}>
+          {!matches ? (
           <IconButton
             onClick={scrollLeft}
             aria-label="scroll left"
@@ -59,6 +57,7 @@ const ForecastComponent = ({ data, isLoading }) => {
           >
             <ArrowBackIosNewIcon />
           </IconButton>
+          ) : null}
           <Box
             ref={scrollContainer}
             sx={{ display: "flex", overflowX: "auto", padding: 2 }}
@@ -111,13 +110,15 @@ const ForecastComponent = ({ data, isLoading }) => {
               </Card>
             ))}
           </Box>
+          {!matches ? (
           <IconButton
             onClick={scrollRight}
             aria-label="scroll right"
-            style={{ visibility: showRightArrow ? "visible" : "hidden", color: '#224f83'  }}
+            style={{ visibility: showLeftArrow && !matches  ? "visible" : "hidden", color: '#224f83'  }}
           >
             <ArrowForwardIosIcon />
           </IconButton>
+           ) : null}
         </Box>
       )}
     </Box>

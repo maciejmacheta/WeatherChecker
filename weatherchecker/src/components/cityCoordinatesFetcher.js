@@ -32,7 +32,7 @@ const CityCoordinatesFetcher = ({ cityName, onCoordsReceived, apiKey }) => {
     return <div>Wystąpił błąd: {error}</div>;
   }
 
-  return null; // Ten komponent nie renderuje niczego w DOM
+  return null;
 };
 
 export default CityCoordinatesFetcher;

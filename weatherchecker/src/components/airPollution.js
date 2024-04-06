@@ -1,10 +1,9 @@
 import React from "react";
-import { Typography, Box, Container, useMediaQuery } from "@mui/material";
+import { useMediaQueries } from "../hooks/useMediaQueries";
+import { Typography, Box, Container } from "@mui/material";
 
 const AirPollution = ({ data }) => {
-  const matches = useMediaQuery("(max-width:600px)");
-  const matchesMSmall = useMediaQuery("(max-width:920px)");
-  const matchesMedium = useMediaQuery("(max-width:1200px)")
+  const { matches, matchesMSmall, matchesMedium } = useMediaQueries();
 
   const aqi = data.list[0].main.aqi;
 

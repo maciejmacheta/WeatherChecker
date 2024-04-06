@@ -1,38 +1,18 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import {
-  Box,
-  Typography,
-  Paper,
-  Grid,
-  useMediaQuery,
-} from "@mui/material";
+import { fetchCurrentWeather } from "../hooks/openWeatherMapFunctions";
+import { useMediaQueries } from "../hooks/useMediaQueries";
+import { Box, Typography, Paper, Grid } from "@mui/material";
 import WeatherIcon from "./weatherIcon";
 import AirPollution from "./airPollution";
 
 const CurrentWeather = ({ city, data }) => {
+  const { matches, matchesMSmall, matchesMedium } = useMediaQueries();
   const [currentWeather, setCurrentWeather] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
-  const matches = useMediaQuery("(max-width:600px)");
-  const matchesMSmall = useMediaQuery("(max-width:920px)");
-  const matchesMedium = useMediaQuery("(max-width:1200px)");
 
   useEffect(() => {
-    const fetchCurrentWeather = async () => {
-      const apiKey = "1000b00bb102f66f8cb2fd52d4c6a4df";
-      const url = `http://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=metric&lang=pl`;
-
-      try {
-        const response = await axios.get(url);
-        setCurrentWeather(response.data);
-        setIsLoading(false);
-      } catch (error) {
-        console.error("Błąd przy uzyskiwaniu danych pogodowych: ", error);
-        setIsLoading(false);
-      }
-    };
-
-    fetchCurrentWeather();
+    fetchCurrentWeather(city, setCurrentWeather, setIsLoading);
   }, [city]);
 
   if (!currentWeather) {
@@ -75,7 +55,8 @@ const CurrentWeather = ({ city, data }) => {
         elevation={5}
         style={{
           display: "flex",
-          flexDirection: matches || matchesMSmall || matchesMedium ? "column" : "row",
+          flexDirection:
+            matches || matchesMSmall || matchesMedium ? "column" : "row",
           backgroundColor: "#234f83",
           padding: "20px",
         }}
@@ -84,8 +65,7 @@ const CurrentWeather = ({ city, data }) => {
           style={{
             padding: "20px",
             marginBottom: matches || matchesMSmall ? "5px" : 0,
-            width:
-              matches || matchesMSmall || matchesMedium? "auto" : "65%",
+            width: matches || matchesMSmall || matchesMedium ? "auto" : "65%",
             alignContent: "center",
             backgroundColor: "#234f83",
             border: "1px solid #355e8e",
@@ -174,12 +154,16 @@ const CurrentWeather = ({ city, data }) => {
                     flexDirection: "column",
                   }}
                 >
-                <Typography sx={{ color: "#A9B5C7" }} variant="caption">
-                  CIŚNIENIE
-                </Typography>
-                <Typography sx={{ fontSize: "15px" }} variant="h5" gutterBottom>
-                  {currentWeather.main.pressure} hPa
-                </Typography>
+                  <Typography sx={{ color: "#A9B5C7" }} variant="caption">
+                    CIŚNIENIE
+                  </Typography>
+                  <Typography
+                    sx={{ fontSize: "15px" }}
+                    variant="h5"
+                    gutterBottom
+                  >
+                    {currentWeather.main.pressure} hPa
+                  </Typography>
                 </Box>
               </Grid>
             </Grid>

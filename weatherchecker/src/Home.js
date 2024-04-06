@@ -1,15 +1,21 @@
-
 import React, { useState, useEffect } from "react";
-import axios from "axios";
-import { Paper, Typography, useMediaQuery, CircularProgress } from "@mui/material";
+import { apiKey } from "./hooks/openWeatherMapApi";
+import { useMediaQueries } from "./hooks/useMediaQueries";
+import {
+  Paper,
+  Typography,
+  CircularProgress,
+} from "@mui/material";
 
 import LocationForm from "./components/locationForm";
 import WeatherForecast from "./components/weatherForecast";
-import LocationService from "./components/locationService";
+import LocationService from "./hooks/locationService";
 import CurrentWeather from "./components/currentWeather";
-import CityCoordinatesFetcher from "./components/cityCoordinatesFetcher";
+import CityCoordinatesFetcher from "./hooks/cityCoordinatesFetcher";
+import { fetchWeather, fetchAirQuality } from "./hooks/openWeatherMapFunctions"; 
 
 const Home = () => {
+  const { matches, matchesMSmall, matchesMedium } = useMediaQueries();
   const [isLoading, setIsLoading] = useState(true);
   const [city, setCity] = useState("");
   const [forecast, setForecast] = useState(null);
@@ -18,10 +24,6 @@ const Home = () => {
   const [lon, setLongitude] = useState(null);
   const [airQuality, setAirQuality] = useState(null);
 
-  const matches = useMediaQuery("(max-width:600px)");
-
-  const api = "1000b00bb102f66f8cb2fd52d4c6a4df";
-
   useEffect(() => {
     navigator.permissions
       .query({ name: "geolocation" })
@@ -29,35 +31,6 @@ const Home = () => {
         setIsLocationAllowed(permissionStatus.state === "granted");
       });
   }, []);
-
-  const fetchWeather = async (cityName) => {
-    const apiKey = api;
-    const url = `http://api.openweathermap.org/data/2.5/forecast?q=${cityName}&appid=${apiKey}&units=metric&lang=pl`;
-
-    try {
-      const response = await axios.get(url);
-      setIsLoading(false);
-      setForecast(response.data);
-    } catch (error) {
-      console.error("Błąd przy uzyskiwaniu danych pogodowych: ", error);
-    }
-  };
-
-  const fetchAirQuality = async (lat, lon) => {
-    const apiKey = api; 
-    const url = `http://api.openweathermap.org/data/2.5/air_pollution?lat=${lat}&lon=${lon}&appid=${apiKey}`;
-
-    try {
-      const response = await axios.get(url);
-      setAirQuality(response.data);
-      console.log(response.data);
-    } catch (error) {
-      console.error(
-        "Błąd przy uzyskiwaniu danych o zanieczyszczeniu powietrza: ",
-        error
-      );
-    }
-  };
 
   const handleLocationChange = (newCity) => {
     setCity(newCity);
@@ -68,7 +41,7 @@ const Home = () => {
     <div className="p-4">
       <Paper elevation={5}>
         <LocationForm onSubmit={handleLocationChange} initialCity={city} />
-        </Paper>
+      </Paper>
       {isLocationAllowed && isLoading ? (
         <div style={{ textAlign: "center" }}>
           <CircularProgress />
@@ -99,12 +72,12 @@ const Home = () => {
       <LocationService onLocationChange={handleLocationChange} />
       <CityCoordinatesFetcher
         cityName={city}
-        apiKey={api}
+        apiKey={apiKey}
         onCoordsReceived={({ lat, lon }) => {
           setLatitude(lat);
           setLongitude(lon);
-          fetchWeather(city);
-          fetchAirQuality(lat, lon);
+          fetchWeather(city, setForecast, setIsLoading);
+          fetchAirQuality(lat, lon, setAirQuality);
         }}
       />
     </div>

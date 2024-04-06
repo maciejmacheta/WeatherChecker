@@ -1,14 +1,15 @@
 import React, { useState, useRef, useEffect } from "react";
+import { useMediaQueries } from "../hooks/useMediaQueries";
+import { Card, CardContent, Typography, Box, IconButton, CircularProgress, Paper  } from "@mui/material";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import ArrowBackIosNewIcon from "@mui/icons-material/ArrowBackIosNew";
 import WeatherIcon from "./weatherIcon";
-import { useMediaQuery, Card, CardContent, Typography, Box, IconButton, CircularProgress  } from "@mui/material";
 
-const ForecastComponent = ({ data, isLoading }) => {
+const ForecastComponent = ({ data, isLoading }) => {  
+  const { matches, matchesMSmall, matchesMedium } = useMediaQueries();
   const [showLeftArrow, setShowLeftArrow] = useState(false);
   const [showRightArrow, setShowRightArrow] = useState(true);
   const scrollContainer = useRef(null);
-  const matches = useMediaQuery("(max-width:600px)"); 
 
   useEffect(() => {
     const checkScrollButtons = () => {
@@ -63,7 +64,8 @@ const ForecastComponent = ({ data, isLoading }) => {
             sx={{ display: "flex", overflowX: "auto", padding: 2 }}
           >
             {data.list.map((forecast, index) => (
-              <Card
+              <Paper
+              elevation={5}
                 key={index}
                 sx={{
                   backgroundColor: "#224f83",
@@ -107,7 +109,7 @@ const ForecastComponent = ({ data, isLoading }) => {
                     </Typography>
                   </Box>
                 </CardContent>
-              </Card>
+              </Paper>
             ))}
           </Box>
           {!matches ? (

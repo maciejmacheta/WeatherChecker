@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import SearchIcon from "@mui/icons-material/Search";
+import { useMediaQueries } from "../hooks/useMediaQueries";
 import {
-  useMediaQuery,
   Grid,
   Typography,
   Button,
@@ -11,9 +11,8 @@ import {
 import logo from "../assets/logo.png";
 
 const LocationForm = ({ onSubmit, initialCity }) => {
+  const { matches, matchesMSmall, matchesMedium } = useMediaQueries();
   const [city, setCity] = useState(initialCity);
-  const matches = useMediaQuery("(max-width:600px)");
-  const matchesMedium = useMediaQuery("(max-width:1200px)");
 
   useEffect(() => {
     setCity(initialCity);
